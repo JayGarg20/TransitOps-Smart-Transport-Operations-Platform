@@ -3,9 +3,12 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Layout = () => {
-  const { user, logout, hasRole } = useAuth();
+  const { user, logout, hasRole, instantSwitch } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [switchLoading, setSwitchLoading] = useState(false);
+  const [switchError, setSwitchError] = useState('');
 
   const getInitials = (name) => {
     if (!name) return 'OP';
@@ -57,12 +60,27 @@ const Layout = () => {
     }
   ];
 
-  const activeItem = navItems.find(item => {
-    if (item.path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(item.path);
-  }) || navItems[0];
-
   const filteredNavItems = navItems.filter(item => hasRole(item.roles));
+
+  const demoAccounts = [
+    { label: 'Fleet Manager', email: 'manager@waybound.com', pass: 'manager123' },
+    { label: 'Safety Officer', email: 'safety@waybound.com', pass: 'safety123' },
+    { label: 'Financial Analyst', email: 'finance@waybound.com', pass: 'finance123' },
+    { label: 'Driver', email: 'driver@waybound.com', pass: 'driver123' }
+  ];
+
+  const handleRoleSwitch = async (email, pass) => {
+    setSwitchLoading(true);
+    setSwitchError('');
+    const res = await instantSwitch(email, pass);
+    setSwitchLoading(false);
+    if (res.success) {
+      setIsProfileOpen(false);
+      setMobileMenuOpen(false);
+    } else {
+      setSwitchError(res.message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -72,9 +90,12 @@ const Layout = () => {
           <h1 className="font-headline-md text-headline-md font-bold text-on-primary-container">Waybound</h1>
           <p className="opacity-60 text-[10px] tracking-widest mt-1">Fleet Ops v2.4</p>
         </div>
+        
         <nav className="flex-1 space-y-1">
           {filteredNavItems.map((item) => {
-            const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+            const isActive = item.path === '/' 
+              ? location.pathname === '/' 
+              : location.pathname.startsWith(item.path);
             return (
               <Link
                 key={item.name}
@@ -91,8 +112,22 @@ const Layout = () => {
             );
           })}
         </nav>
+        
         <div className="mt-auto border-t border-outline-variant/20 pt-4">
-          <div className="px-6 py-3 flex items-center gap-3 mb-2">
+          {/* User Profile Clickable Link */}
+          <button
+            onClick={() => setIsProfileOpen(true)}
+            className="w-full flex items-center px-6 py-3 text-on-primary-container opacity-70 hover:opacity-100 hover:bg-tertiary-container transition-colors duration-150 text-left font-label-caps text-label-caps uppercase"
+          >
+            <span className="material-symbols-outlined mr-4">account_circle</span>
+            User Profile
+          </button>
+
+          {/* User detail block (clickable to open profile) */}
+          <div 
+            onClick={() => setIsProfileOpen(true)}
+            className="px-6 py-3 flex items-center gap-3 mb-2 cursor-pointer hover:bg-tertiary-container transition-colors"
+          >
             <div className="w-8 h-8 rounded-sm bg-primary border border-outline-variant flex items-center justify-center font-bold text-xs text-on-primary">
               {getInitials(user?.name)}
             </div>
@@ -101,6 +136,7 @@ const Layout = () => {
               <p className="text-[9px] opacity-60 truncate">{user?.role}</p>
             </div>
           </div>
+          
           <button
             onClick={logout}
             className="w-full flex items-center px-6 py-3 text-on-primary-container opacity-70 hover:opacity-100 hover:bg-tertiary-container transition-colors duration-150 text-left"
@@ -125,9 +161,12 @@ const Layout = () => {
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
+            
             <nav className="flex-1 space-y-1">
               {filteredNavItems.map((item) => {
-                const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+                const isActive = item.path === '/' 
+                  ? location.pathname === '/' 
+                  : location.pathname.startsWith(item.path);
                 return (
                   <Link
                     key={item.name}
@@ -145,8 +184,20 @@ const Layout = () => {
                 );
               })}
             </nav>
+            
             <div className="mt-auto border-t border-outline-variant/20 pt-4">
-              <div className="px-6 py-3 flex items-center gap-3 mb-2">
+              <button
+                onClick={() => { setIsProfileOpen(true); }}
+                className="w-full flex items-center px-6 py-3 text-on-primary-container opacity-70 hover:opacity-100 hover:bg-tertiary-container transition-colors duration-150 text-left font-label-caps text-label-caps uppercase"
+              >
+                <span className="material-symbols-outlined mr-4">account_circle</span>
+                User Profile
+              </button>
+
+              <div 
+                onClick={() => { setIsProfileOpen(true); }}
+                className="px-6 py-3 flex items-center gap-3 mb-2 cursor-pointer hover:bg-tertiary-container transition-colors"
+              >
                 <div className="w-8 h-8 rounded-sm bg-primary border border-outline-variant flex items-center justify-center font-bold text-xs text-on-primary">
                   {getInitials(user?.name)}
                 </div>
@@ -155,6 +206,7 @@ const Layout = () => {
                   <p className="text-[9px] opacity-60 truncate">{user?.role}</p>
                 </div>
               </div>
+              
               <button
                 onClick={logout}
                 className="w-full flex items-center px-6 py-3 text-on-primary-container opacity-70 hover:opacity-100 hover:bg-tertiary-container transition-colors duration-150 text-left"
@@ -176,12 +228,42 @@ const Layout = () => {
               <span className="material-symbols-outlined">menu</span>
             </button>
             <span className="font-headline-md text-headline-md font-black text-primary truncate">Waybound Control</span>
+            
+            {/* Clickable Header Section Tabs */}
             <nav className="hidden md:flex items-center space-x-6 text-on-surface-variant font-label-caps text-xs">
-              <span className={`pb-1 ${location.pathname === '/' || location.pathname === '/vehicles' || location.pathname === '/drivers' ? 'text-primary border-b-2 border-primary font-bold' : ''}`}>FLEET</span>
-              <span className={`pb-1 ${location.pathname === '/trips' || location.pathname === '/maintenance' ? 'text-primary border-b-2 border-primary font-bold' : ''}`}>LOGISTICS</span>
-              <span className={`pb-1 ${location.pathname === '/expenses' || location.pathname === '/analytics' ? 'text-primary border-b-2 border-primary font-bold' : ''}`}>SAFETY & FINANCE</span>
+              <Link 
+                to="/" 
+                className={`pb-1 hover:text-primary transition-colors ${
+                  location.pathname === '/' || location.pathname === '/vehicles' || location.pathname === '/drivers' 
+                    ? 'text-primary border-b-2 border-primary font-bold' 
+                    : ''
+                }`}
+              >
+                FLEET
+              </Link>
+              <Link 
+                to="/trips" 
+                className={`pb-1 hover:text-primary transition-colors ${
+                  location.pathname === '/trips' || location.pathname === '/maintenance' 
+                    ? 'text-primary border-b-2 border-primary font-bold' 
+                    : ''
+                }`}
+              >
+                LOGISTICS
+              </Link>
+              <Link 
+                to="/expenses" 
+                className={`pb-1 hover:text-primary transition-colors ${
+                  location.pathname === '/expenses' || location.pathname === '/analytics' 
+                    ? 'text-primary border-b-2 border-primary font-bold' 
+                    : ''
+                }`}
+              >
+                SAFETY & FINANCE
+              </Link>
             </nav>
           </div>
+          
           <div className="flex items-center space-x-4">
             <div className="relative">
               <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:scale-95 duration-75">notifications</span>
@@ -189,14 +271,22 @@ const Layout = () => {
             </div>
             <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:scale-95 duration-75 hidden sm:inline">help_outline</span>
             
-            {/* User role pill */}
-            <span className="hidden sm:inline bg-surface-container border border-outline-variant px-2 py-0.5 rounded-sm font-label-caps text-[10px] text-on-surface-variant uppercase">
+            {/* Clickable User role pill */}
+            <span 
+              onClick={() => setIsProfileOpen(true)}
+              className="hidden sm:inline bg-surface-container border border-outline-variant px-2 py-0.5 rounded-sm font-label-caps text-[10px] text-on-surface-variant uppercase cursor-pointer hover:bg-surface-container-high transition-colors"
+            >
               {user?.role}
             </span>
 
-            <div className="w-8 h-8 rounded-sm bg-primary border border-outline-variant flex items-center justify-center font-bold text-xs text-on-primary">
+            {/* Clickable Avatar */}
+            <div 
+              onClick={() => setIsProfileOpen(true)}
+              className="w-8 h-8 rounded-sm bg-primary border border-outline-variant flex items-center justify-center font-bold text-xs text-on-primary cursor-pointer hover:bg-primary-container transition-colors"
+            >
               {getInitials(user?.name)}
             </div>
+            
             <button onClick={logout} className="text-on-surface-variant hover:text-primary transition-colors">
               <span className="material-symbols-outlined">logout</span>
             </button>
@@ -210,6 +300,81 @@ const Layout = () => {
           </div>
         </main>
       </div>
+
+      {/* User Profile / Switch Role Modal */}
+      {isProfileOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary/40 backdrop-blur-xs p-4">
+          <div className="bg-[#FAF7F0] border-2 border-primary hard-shadow w-full max-w-md p-6 relative">
+            <button
+              onClick={() => { setIsProfileOpen(false); setSwitchError(''); }}
+              className="absolute top-4 right-4 text-on-surface-variant hover:text-primary"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+
+            <h2 className="font-headline-md text-headline-md text-primary uppercase font-bold mb-4 font-label-caps">Operator Profile</h2>
+
+            {switchLoading ? (
+              <div className="py-8 text-center font-label-caps text-label-caps animate-pulse">
+                Synchronizing credentials & re-establishing terminal nodes...
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Active user details */}
+                <div className="border border-outline-variant p-4 bg-surface-container-low space-y-2">
+                  <div>
+                    <span className="block font-label-caps text-[9px] text-on-surface-variant uppercase">Operator Name</span>
+                    <span className="font-body-sm text-sm text-primary font-bold">{user?.name}</span>
+                  </div>
+                  <div>
+                    <span className="block font-label-caps text-[9px] text-on-surface-variant uppercase">Registered Terminal Email</span>
+                    <span className="font-data-mono text-sm">{user?.email}</span>
+                  </div>
+                  <div>
+                    <span className="block font-label-caps text-[9px] text-on-surface-variant uppercase">Access Clearance Role</span>
+                    <span className="font-label-caps text-xs text-secondary font-bold">{user?.role}</span>
+                  </div>
+                </div>
+
+                {switchError && (
+                  <div className="bg-error-container border border-error text-on-error-container p-2.5 rounded-sm text-xs font-body-sm">
+                    {switchError}
+                  </div>
+                )}
+
+                {/* Instant switch operator selection */}
+                <div className="pt-4 border-t border-outline-variant">
+                  <p className="font-label-caps text-[10px] text-on-surface-variant uppercase text-center mb-3">
+                    Fast clearance role switcher (instant 2FA bypass)
+                  </p>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    {demoAccounts.map((demo) => {
+                      const isCurrent = user?.role === demo.label;
+                      return (
+                        <button
+                          key={demo.label}
+                          type="button"
+                          disabled={isCurrent}
+                          onClick={() => handleRoleSwitch(demo.email, demo.pass)}
+                          className={`p-2.5 text-left border rounded-sm transition-all duration-75 ${
+                            isCurrent
+                              ? 'bg-primary-container border-outline text-primary-fixed cursor-not-allowed opacity-50'
+                              : 'bg-surface-container border-outline-variant hover:bg-surface-container-high hover:border-outline text-on-surface'
+                          }`}
+                        >
+                          <p className="font-label-caps text-[10px] font-bold">{demo.label}</p>
+                          <p className="font-data-mono text-[8px] opacity-75 truncate">{demo.email}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
