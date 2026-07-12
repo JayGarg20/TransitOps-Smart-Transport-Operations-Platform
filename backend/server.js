@@ -10,6 +10,8 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import vehicleRoutes from './routes/vehicles.js';
 import driverRoutes from './routes/drivers.js';
+import tripRoutes from './routes/trips.js';
+import maintenanceRoutes from './routes/maintenance.js';
 
 dotenv.config();
 
@@ -26,16 +28,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Bind routes
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/drivers', driverRoutes);
+app.use('/api/trips', tripRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'UP', message: 'TransitOps Backend Service is healthy.' });
+  res.json({ status: 'UP', message: 'TransitOps Backend (Logistics Node) is healthy.' });
 });
 
 app.use((err, req, res, next) => {
@@ -49,7 +52,7 @@ const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/transitops'
 
 mongoose.connect(mongoUri)
   .then(() => {
-    console.log('Successfully connected to MongoDB database.');
+    console.log('Successfully connected to MongoDB database (Logistics Node).');
     app.listen(PORT, () => {
       console.log(`TransitOps server listening on port ${PORT}`);
     });

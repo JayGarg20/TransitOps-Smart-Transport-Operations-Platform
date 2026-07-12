@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import User from './models/User.js';
 import Vehicle from './models/Vehicle.js';
 import Driver from './models/Driver.js';
+import Trip from './models/Trip.js';
+import MaintenanceLog from './models/MaintenanceLog.js';
 
 dotenv.config();
 
@@ -18,6 +20,8 @@ const seedDatabase = async () => {
     await User.deleteMany({});
     await Vehicle.deleteMany({});
     await Driver.deleteMany({});
+    await Trip.deleteMany({});
+    await MaintenanceLog.deleteMany({});
     
     console.log('Data cleared. Seeding Users...');
     const salt = await bcrypt.genSalt(10);
@@ -54,7 +58,7 @@ const seedDatabase = async () => {
     await User.insertMany(users);
 
     console.log('Seeding Vehicles...');
-    const vehicles = [
+    const vehiclesData = [
       {
         vin: 'VIN1002930492019',
         plateNumber: 'TX-882-B',
@@ -62,7 +66,7 @@ const seedDatabase = async () => {
         type: 'Heavy Truck',
         maxPayloadCapacity: 24000,
         fuelCapacity: 450,
-        status: 'Available',
+        status: 'On Trip',
         insuranceExpiry: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000)
       },
       {
@@ -72,7 +76,7 @@ const seedDatabase = async () => {
         type: 'Heavy Truck',
         maxPayloadCapacity: 26000,
         fuelCapacity: 500,
-        status: 'Available',
+        status: 'In Shop',
         insuranceExpiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
       },
       {
@@ -83,19 +87,19 @@ const seedDatabase = async () => {
         maxPayloadCapacity: 12000,
         fuelCapacity: 150,
         status: 'Available',
-        insuranceExpiry: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // Expired Insurance
+        insuranceExpiry: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
       }
     ];
-    await Vehicle.insertMany(vehicles);
+    const insertedVehicles = await Vehicle.insertMany(vehiclesData);
 
     console.log('Seeding Drivers...');
-    const drivers = [
+    const driversData = [
       {
         name: 'Marcus Vance',
         licenseNumber: 'DL-TEX-99201',
         licenseExpiry: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
         contact: '+1-555-0192',
-        status: 'Off Duty',
+        status: 'On Duty',
         verificationStatus: 'Verified'
       },
       {
@@ -110,13 +114,51 @@ const seedDatabase = async () => {
       {
         name: 'Dave Miller',
         licenseNumber: 'DL-FLA-44920',
-        licenseExpiry: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // Expired License
+        licenseExpiry: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
         contact: '+1-555-0394',
         status: 'Suspended',
         verificationStatus: 'Rejected'
       }
     ];
-    await Driver.insertMany(drivers);
+    const insertedDrivers = await Driver.insertMany(driversData);
+
+    console.log('Seeding Trips...');
+    const trips = [
+      {
+        tripId: 'TRIP-9901',
+        vehicleId: insertedVehicles[0]._id,
+        driverId: insertedDrivers[0]._id,
+        startLocation: 'Dallas Port Logistics',
+        endLocation: 'Austin Industrial Park',
+        plannedDistance: 195,
+        actualDistance: 0,
+        cargoWeight: 18500,
+        status: 'Dispatched',
+        startDate: new Date(),
+        logs: [
+          { message: 'Trip planned and registered.', timestamp: new Date(Date.now() - 600000) },
+          { message: 'Vehicle and Driver assigned. Cargo locked.', timestamp: new Date(Date.now() - 300000) },
+          { message: 'Trip dispatched from Dallas Port.', timestamp: new Date() }
+        ]
+      }
+    ];
+    await Trip.insertMany(trips);
+
+    console.log('Seeding Maintenance Logs...');
+    const maintenance = [
+      {
+        vehicleId: insertedVehicles[1]._id,
+        issueDescription: 'Scheduled engine diagnostics and front axle wear replacement',
+        severity: 'Medium',
+        status: 'Active',
+        scheduledDate: new Date(),
+        cost: 0,
+        logs: [
+          { message: 'Vehicle set to In Shop automatically.', timestamp: new Date() }
+        ]
+      }
+    ];
+    await MaintenanceLog.insertMany(maintenance);
 
     console.log('Database seeding successfully finished.');
     process.exit(0);

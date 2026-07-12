@@ -33,6 +33,18 @@ const Layout = () => {
       icon: 'badge',
       path: '/drivers',
       roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst']
+    },
+    {
+      name: 'Trip Dispatch',
+      icon: 'route',
+      path: '/trips',
+      roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst']
+    },
+    {
+      name: 'Maintenance',
+      icon: 'build',
+      path: '/maintenance',
+      roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst']
     }
   ];
 
@@ -69,7 +81,9 @@ const Layout = () => {
         
         <nav className="flex-1 space-y-1">
           {filteredNavItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = item.path === '/' 
+              ? location.pathname === '/' 
+              : location.pathname.startsWith(item.path);
             return (
               <Link
                 key={item.name}
@@ -136,7 +150,9 @@ const Layout = () => {
             
             <nav className="flex-1 space-y-1">
               {filteredNavItems.map((item) => {
-                const isActive = location.pathname === item.path;
+                const isActive = item.path === '/' 
+                  ? location.pathname === '/' 
+                  : location.pathname.startsWith(item.path);
                 return (
                   <Link
                     key={item.name}
@@ -203,12 +219,22 @@ const Layout = () => {
               <Link 
                 to="/" 
                 className={`pb-1 hover:text-primary transition-colors ${
-                  location.pathname === '/' 
+                  location.pathname === '/' || location.pathname === '/vehicles' || location.pathname === '/drivers' 
                     ? 'text-primary border-b-2 border-primary font-bold' 
                     : ''
                 }`}
               >
                 FLEET
+              </Link>
+              <Link 
+                to="/trips" 
+                className={`pb-1 hover:text-primary transition-colors ${
+                  location.pathname === '/trips' || location.pathname === '/maintenance' 
+                    ? 'text-primary border-b-2 border-primary font-bold' 
+                    : ''
+                }`}
+              >
+                LOGISTICS
               </Link>
             </nav>
           </div>
