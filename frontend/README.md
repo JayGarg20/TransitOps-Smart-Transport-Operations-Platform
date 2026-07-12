@@ -22,4 +22,5 @@ If you are developing a production application, we recommend using TypeScript wi
 - **Milestone C (Hour 5-6):** Trip Dispatch and Maintenance logs (Completed).
 - **Milestone D (Hour 7-8):** Fuel Logging, Expense tracking, and Analytics/CSV reports (Completed).
   - *Hour 3 Progress Update:* Added fuel efficiency tracking and ROI analytics charts.
+  - *Hour 4 Progress Update:* Polished fuel efficiency telemetry graphs and verified CSV export security permissions.
 
