@@ -9,10 +9,10 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// Rate limiting: 3 login/OTP requests per 10 minutes
+// Rate limiting: 100 login/OTP requests per 10 minutes
 const authRateLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5, // Limit each IP to 5 requests per window for security
+  max: 100, // Limit each IP to 100 requests per window for security during demos
   message: { message: 'Too many auth requests, please try again after 10 minutes' },
   standardHeaders: true,
   legacyHeaders: false,
