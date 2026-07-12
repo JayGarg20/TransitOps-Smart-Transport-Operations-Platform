@@ -8,6 +8,8 @@ TransitOps - Smart Transport Operations Platform.
   - *Hour 4 Progress Update:* Refactored visual styles and responsive grids for the telemetry dashboard.
 - **Milestone B (Hour 3-4):** Vehicle Registry and Driver Management (Completed).
   - *Hour 3 Progress Update:* Implemented license expiry checks and vehicle/driver onboarding.
+  - *Hour 4 Progress Update:* Refactored vehicle availability logic and driver status tracking dashboard.
+  - *Hour 4 Progress Update:* Refactored vehicle status logic and added verification warnings.
 - **Milestone C (Hour 5-6):** Trip Dispatch and Maintenance logs (Completed).
   - *Hour 3 Progress Update:* Integrated weight capacity check triggers and automatic status locks.
 - **Milestone D (Hour 7-8):** Fuel Logging, Expense tracking, and Analytics/CSV reports (Completed).
