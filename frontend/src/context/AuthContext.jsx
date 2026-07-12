@@ -59,6 +59,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const instantSwitch = async (email, password) => {
+    try {
+      setLoading(true);
+      const loginRes = await api.post('/auth/login', { email, password });
+      const otp = loginRes.data.devOtp || '123456';
+      
+      const verifyRes = await api.post('/auth/verify-otp', { email, otp });
+      const { token, user: userData } = verifyRes.data;
+      
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      
+      setLoading(false);
+      return { success: true };
+    } catch (err) {
+      setLoading(false);
+      return { 
+        success: false, 
+        message: err.response?.data?.message || 'Switch failed' 
+      };
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -73,7 +97,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, verifyOtp, resendOtp, logout, hasRole }}>
+    <AuthContext.Provider value={{ user, loading, login, verifyOtp, resendOtp, logout, hasRole, instantSwitch }}>
       {children}
     </AuthContext.Provider>
   );
