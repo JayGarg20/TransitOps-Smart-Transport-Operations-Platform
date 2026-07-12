@@ -19,4 +19,5 @@ If you are developing a production application, we recommend using TypeScript wi
 
 - **Milestone A (Hour 1-2):** Authentication (JWT, RBAC, 2FA OTP) and Telemetry Dashboard (Completed).
 - **Milestone B (Hour 3-4):** Vehicle Registry and Driver Management (Completed).
-- **Milestone C (Hour 5-6):** Trip Dispatch and Maintenance logs (Active).
+- **Milestone C (Hour 5-6):** Trip Dispatch and Maintenance logs (Completed).
+  - *Hour 3 Progress Update:* Integrated weight capacity check triggers and automatic status locks.
