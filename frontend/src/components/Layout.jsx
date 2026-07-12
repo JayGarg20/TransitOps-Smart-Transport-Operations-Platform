@@ -33,30 +33,6 @@ const Layout = () => {
       icon: 'badge',
       path: '/drivers',
       roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst']
-    },
-    {
-      name: 'Trip Dispatch',
-      icon: 'route',
-      path: '/trips',
-      roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst']
-    },
-    {
-      name: 'Maintenance',
-      icon: 'build',
-      path: '/maintenance',
-      roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst']
-    },
-    {
-      name: 'Fuel & Expenses',
-      icon: 'payments',
-      path: '/expenses',
-      roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst']
-    },
-    {
-      name: 'Analytics & Reports',
-      icon: 'leaderboard',
-      path: '/analytics',
-      roles: ['Fleet Manager', 'Financial Analyst']
     }
   ];
 
@@ -114,7 +90,6 @@ const Layout = () => {
         </nav>
         
         <div className="mt-auto border-t border-outline-variant/20 pt-4">
-          {/* User Profile Clickable Link */}
           <button
             onClick={() => setIsProfileOpen(true)}
             className="w-full flex items-center px-6 py-3 text-on-primary-container opacity-70 hover:opacity-100 hover:bg-tertiary-container transition-colors duration-150 text-left font-label-caps text-label-caps uppercase"
@@ -123,7 +98,6 @@ const Layout = () => {
             User Profile
           </button>
 
-          {/* User detail block (clickable to open profile) */}
           <div 
             onClick={() => setIsProfileOpen(true)}
             className="px-6 py-3 flex items-center gap-3 mb-2 cursor-pointer hover:bg-tertiary-container transition-colors"
@@ -151,7 +125,7 @@ const Layout = () => {
       {mobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="fixed inset-0 bg-primary/40 backdrop-blur-xs" onClick={() => setMobileMenuOpen(false)}></div>
-          <aside className="w-[260px] h-screen bg-primary-container text-on-primary-container font-label-caps text-label-caps uppercase tracking-wider flex flex-col py-stack-md relative z-50 border-r border-outline">
+          <aside className="w-[260px] h-screen bg-primary-container text-on-primary-container font-label-caps text-label-caps uppercase tracking-wider flex-col py-stack-md relative z-50 border-r border-outline">
             <div className="px-6 mb-8 flex justify-between items-center">
               <div>
                 <h1 className="font-headline-md text-headline-md font-bold text-on-primary-container">Waybound</h1>
@@ -229,7 +203,6 @@ const Layout = () => {
             </button>
             <span className="font-headline-md text-headline-md font-black text-primary truncate">Waybound Control</span>
             
-            {/* Clickable Header Section Tabs */}
             <nav className="hidden md:flex items-center space-x-6 text-on-surface-variant font-label-caps text-xs">
               <Link 
                 to="/" 
@@ -241,26 +214,6 @@ const Layout = () => {
               >
                 FLEET
               </Link>
-              <Link 
-                to="/trips" 
-                className={`pb-1 hover:text-primary transition-colors ${
-                  location.pathname === '/trips' || location.pathname === '/maintenance' 
-                    ? 'text-primary border-b-2 border-primary font-bold' 
-                    : ''
-                }`}
-              >
-                LOGISTICS
-              </Link>
-              <Link 
-                to="/expenses" 
-                className={`pb-1 hover:text-primary transition-colors ${
-                  location.pathname === '/expenses' || location.pathname === '/analytics' 
-                    ? 'text-primary border-b-2 border-primary font-bold' 
-                    : ''
-                }`}
-              >
-                SAFETY & FINANCE
-              </Link>
             </nav>
           </div>
           
@@ -271,7 +224,6 @@ const Layout = () => {
             </div>
             <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:scale-95 duration-75 hidden sm:inline">help_outline</span>
             
-            {/* Clickable User role pill */}
             <span 
               onClick={() => setIsProfileOpen(true)}
               className="hidden sm:inline bg-surface-container border border-outline-variant px-2 py-0.5 rounded-sm font-label-caps text-[10px] text-on-surface-variant uppercase cursor-pointer hover:bg-surface-container-high transition-colors"
@@ -279,7 +231,6 @@ const Layout = () => {
               {user?.role}
             </span>
 
-            {/* Clickable Avatar */}
             <div 
               onClick={() => setIsProfileOpen(true)}
               className="w-8 h-8 rounded-sm bg-primary border border-outline-variant flex items-center justify-center font-bold text-xs text-on-primary cursor-pointer hover:bg-primary-container transition-colors"
@@ -320,7 +271,6 @@ const Layout = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {/* Active user details */}
                 <div className="border border-outline-variant p-4 bg-surface-container-low space-y-2">
                   <div>
                     <span className="block font-label-caps text-[9px] text-on-surface-variant uppercase">Operator Name</span>
@@ -342,7 +292,6 @@ const Layout = () => {
                   </div>
                 )}
 
-                {/* Instant switch operator selection */}
                 <div className="pt-4 border-t border-outline-variant">
                   <p className="font-label-caps text-[10px] text-on-surface-variant uppercase text-center mb-3">
                     Fast clearance role switcher (instant 2FA bypass)
