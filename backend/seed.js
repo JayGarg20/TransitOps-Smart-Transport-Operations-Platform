@@ -1,15 +1,11 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
-import fs from 'fs';
-
 import User from './models/User.js';
 import Vehicle from './models/Vehicle.js';
 import Driver from './models/Driver.js';
 import Trip from './models/Trip.js';
 import MaintenanceLog from './models/MaintenanceLog.js';
-import FuelLog from './models/FuelLog.js';
-import Expense from './models/Expense.js';
 
 dotenv.config();
 
@@ -20,225 +16,154 @@ const seedDatabase = async () => {
     console.log('Connecting to database for seeding...');
     await mongoose.connect(mongoUri);
     console.log('Connected. Cleaning existing data...');
-
-    // Clear existing collections
+    
     await User.deleteMany({});
     await Vehicle.deleteMany({});
     await Driver.deleteMany({});
     await Trip.deleteMany({});
     await MaintenanceLog.deleteMany({});
-    await FuelLog.deleteMany({});
-    await Expense.deleteMany({});
-
-    console.log('Data cleared. Seeding Users...');
     
-    // Hash passwords
+    console.log('Data cleared. Seeding Users...');
     const salt = await bcrypt.genSalt(10);
-    const managerPassword = await bcrypt.hash('manager123', salt);
-    const safetyPassword = await bcrypt.hash('safety123', salt);
-    const financePassword = await bcrypt.hash('finance123', salt);
-    const driverPassword = await bcrypt.hash('driver123', salt);
-
     const users = [
       {
-        name: 'Marcus Vance',
+        name: 'Alex Mercer',
         email: 'manager@waybound.com',
-        passwordHash: managerPassword,
+        passwordHash: await bcrypt.hash('manager123', salt),
         role: 'Fleet Manager',
         isEmailVerified: true
       },
       {
         name: 'Sarah Connor',
         email: 'safety@waybound.com',
-        passwordHash: safetyPassword,
+        passwordHash: await bcrypt.hash('safety123', salt),
         role: 'Safety Officer',
         isEmailVerified: true
       },
       {
-        name: 'Gordon Gekko',
+        name: 'John Doe',
         email: 'finance@waybound.com',
-        passwordHash: financePassword,
+        passwordHash: await bcrypt.hash('finance123', salt),
         role: 'Financial Analyst',
         isEmailVerified: true
       },
       {
-        name: 'Alex Mercer',
+        name: 'Marcus Vance',
         email: 'driver@waybound.com',
-        passwordHash: driverPassword,
+        passwordHash: await bcrypt.hash('driver123', salt),
         role: 'Driver',
         isEmailVerified: true
       }
     ];
-
-    const seededUsers = await User.insertMany(users);
-    console.log(`Seeded ${seededUsers.length} users successfully.`);
+    await User.insertMany(users);
 
     console.log('Seeding Vehicles...');
-    const vehicles = [
+    const vehiclesData = [
       {
-        regNumber: 'TRK-01',
-        name: 'Volvo VNL 860 (Semi)',
-        type: 'Heavy Duty Truck',
-        maxLoadCapacity: 18000, // 18 tons
-        odometer: 120000,
-        acquisitionCost: 145000,
-        status: 'Available'
+        vin: 'VIN1002930492019',
+        plateNumber: 'TX-882-B',
+        model: 'Peterbilt 579 Semi-Truck',
+        type: 'Heavy Truck',
+        maxPayloadCapacity: 24000,
+        fuelCapacity: 450,
+        status: 'On Trip',
+        insuranceExpiry: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000)
       },
       {
-        regNumber: 'VAN-05',
-        name: 'Ford Transit Cargo Van',
-        type: 'Van',
-        maxLoadCapacity: 1500, // 1.5 tons
-        odometer: 45000,
-        acquisitionCost: 42000,
-        status: 'Available'
+        vin: 'VIN9920381029304',
+        plateNumber: 'CA-947-X',
+        model: 'Freightliner Cascadia',
+        type: 'Heavy Truck',
+        maxPayloadCapacity: 26000,
+        fuelCapacity: 500,
+        status: 'In Shop',
+        insuranceExpiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
       },
       {
-        regNumber: 'EV-09',
-        name: 'Rivian EDV Delivery',
-        type: 'EV Dispatch',
-        maxLoadCapacity: 800, // 800 kg
-        odometer: 12000,
-        acquisitionCost: 72000,
-        status: 'Available'
-      },
-      {
-        regNumber: 'TRK-12',
-        name: 'Freightliner Cascadia',
-        type: 'Heavy Duty Truck',
-        maxLoadCapacity: 20000,
-        odometer: 250000,
-        acquisitionCost: 160000,
-        status: 'In Shop' // starts in maintenance
+        vin: 'VIN3392019203940',
+        plateNumber: 'FL-229-M',
+        model: 'Ford F-550 Box Truck',
+        type: 'Medium Duty',
+        maxPayloadCapacity: 12000,
+        fuelCapacity: 150,
+        status: 'Available',
+        insuranceExpiry: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
       }
     ];
-
-    const seededVehicles = await Vehicle.insertMany(vehicles);
-    console.log(`Seeded ${seededVehicles.length} vehicles successfully.`);
+    const insertedVehicles = await Vehicle.insertMany(vehiclesData);
 
     console.log('Seeding Drivers...');
-    
-    // Future date helper for licenses
-    const getFutureDate = (yearsAhead) => {
-      const d = new Date();
-      d.setFullYear(d.getFullYear() + yearsAhead);
-      return d;
-    };
-
-    const drivers = [
+    const driversData = [
       {
-        name: 'Marcus Thorne',
-        licenseNumber: 'TX-9902-XJ',
-        licenseCategory: 'Class A CDL',
-        licenseExpiryDate: getFutureDate(2),
-        contact: '(512) 555-0143',
-        safetyScore: 98,
-        status: 'Available',
-        verificationStatus: 'Verified',
-        licensePhotoUrl: '/uploads/license-placeholder.png' // Starts verified
+        name: 'Marcus Vance',
+        licenseNumber: 'DL-TEX-99201',
+        licenseExpiry: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+        contact: '+1-555-0192',
+        status: 'On Duty',
+        verificationStatus: 'Verified'
       },
       {
-        name: 'Helena Carter',
-        licenseNumber: 'CA-5881-AS',
-        licenseCategory: 'Class B CDL',
-        licenseExpiryDate: getFutureDate(1),
-        contact: '(213) 555-0182',
-        safetyScore: 92,
-        status: 'Available',
-        verificationStatus: 'Verified',
-        licensePhotoUrl: '/uploads/license-placeholder.png' // Starts verified
-      },
-      {
-        name: 'Devon Miller',
-        licenseNumber: 'NY-7721-OP',
-        licenseCategory: 'Hazardous Mat',
-        licenseExpiryDate: getFutureDate(3),
-        contact: '(917) 555-0109',
-        safetyScore: 78,
+        name: 'Janice Kowalski',
+        licenseNumber: 'DL-CAL-38291',
+        licenseExpiry: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
+        contact: '+1-555-0283',
         status: 'Off Duty',
         verificationStatus: 'Pending',
-        licensePhotoUrl: null // Starts unverified without photo to demo Safety Officer upload/approve flow
+        licensePhotoUrl: '/uploads/demo_license.png'
+      },
+      {
+        name: 'Dave Miller',
+        licenseNumber: 'DL-FLA-44920',
+        licenseExpiry: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+        contact: '+1-555-0394',
+        status: 'Suspended',
+        verificationStatus: 'Rejected'
       }
     ];
+    const insertedDrivers = await Driver.insertMany(driversData);
 
-    const seededDrivers = await Driver.insertMany(drivers);
-    console.log(`Seeded ${seededDrivers.length} drivers successfully.`);
-
-    // Create a default placeholder image for testing
-    if (!fs.existsSync('./uploads')) {
-      fs.mkdirSync('./uploads', { recursive: true });
-    }
-    // Create a simple dummy text file pretending to be a PNG
-    fs.writeFileSync('./uploads/license-placeholder.png', 'DUMMY_LICENSE_PHOTO_DATA');
-
-    // Seed some historical maintenance logs for the vehicle TRK-12
-    const cascadia = seededVehicles.find(v => v.regNumber === 'TRK-12');
-    const semi = seededVehicles.find(v => v.regNumber === 'TRK-01');
+    console.log('Seeding Trips...');
+    const trips = [
+      {
+        tripId: 'TRIP-9901',
+        vehicleId: insertedVehicles[0]._id,
+        driverId: insertedDrivers[0]._id,
+        startLocation: 'Dallas Port Logistics',
+        endLocation: 'Austin Industrial Park',
+        plannedDistance: 195,
+        actualDistance: 0,
+        cargoWeight: 18500,
+        status: 'Dispatched',
+        startDate: new Date(),
+        logs: [
+          { message: 'Trip planned and registered.', timestamp: new Date(Date.now() - 600000) },
+          { message: 'Vehicle and Driver assigned. Cargo locked.', timestamp: new Date(Date.now() - 300000) },
+          { message: 'Trip dispatched from Dallas Port.', timestamp: new Date() }
+        ]
+      }
+    ];
+    await Trip.insertMany(trips);
 
     console.log('Seeding Maintenance Logs...');
-    const maintenanceLogs = [
+    const maintenance = [
       {
-        vehicleId: cascadia._id,
-        description: 'Engine oil flush & transmission diagnostics',
-        cost: 850,
-        startDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-        status: 'active'
-      },
-      {
-        vehicleId: semi._id,
-        description: 'Brake pad replacement (rear axles)',
-        cost: 450,
-        startDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
-        endDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
-        status: 'closed'
+        vehicleId: insertedVehicles[1]._id,
+        issueDescription: 'Scheduled engine diagnostics and front axle wear replacement',
+        severity: 'Medium',
+        status: 'Active',
+        scheduledDate: new Date(),
+        cost: 0,
+        logs: [
+          { message: 'Vehicle set to In Shop automatically.', timestamp: new Date() }
+        ]
       }
     ];
-    await MaintenanceLog.insertMany(maintenanceLogs);
-
-    // Seed some historical fuel/other expenses
-    console.log('Seeding Expenses & Fuel Logs...');
-    await FuelLog.insertMany([
-      {
-        vehicleId: semi._id,
-        liters: 120,
-        cost: 240,
-        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
-      },
-      {
-        vehicleId: semi._id,
-        liters: 95,
-        cost: 190,
-        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
-      }
-    ]);
-
-    await Expense.insertMany([
-      {
-        vehicleId: semi._id,
-        type: 'toll',
-        amount: 35,
-        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
-      }
-    ]);
-
-    // Seed a completed trip to calculate fuel efficiency / ROI
-    const marcusDriver = seededDrivers.find(d => d.name === 'Marcus Thorne');
-    const historicalTrip = new Trip({
-      source: 'Houston Port Terminal A',
-      destination: 'Dallas Logistics Hub C',
-      vehicleId: semi._id,
-      driverId: marcusDriver._id,
-      cargoWeight: 14500,
-      plannedDistance: 380,
-      actualDistance: 380,
-      status: 'Completed'
-    });
-    await historicalTrip.save();
+    await MaintenanceLog.insertMany(maintenance);
 
     console.log('Database seeding successfully finished.');
     process.exit(0);
   } catch (error) {
-    console.error('Error seeding database:', error.message);
+    console.error('Error seeding database:', error);
     process.exit(1);
   }
 };
