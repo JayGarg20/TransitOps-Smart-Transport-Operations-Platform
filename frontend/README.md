@@ -15,7 +15,8 @@ The React Compiler is not enabled on this template because of its impact on dev 
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
 
-## Milestones
+## 🌿 Active Milestones
 
-- **Milestone B (Hour 3-4):** Vehicle Registry and Driver Management (Active).
+- **Milestone B (Hour 3-4):** Vehicle Registry and Driver Management (Completed).
+  - *Hour 3 Progress Update:* Implemented license expiry checks and vehicle/driver onboarding.
 
