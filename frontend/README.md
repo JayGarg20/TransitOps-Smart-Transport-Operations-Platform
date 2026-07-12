@@ -15,6 +15,7 @@ TransitOps - Smart Transport Operations Platform.
   - *Hour 4 Progress Update:* Polished dispatcher dashboard tables and capacity validation error screens.
 - **Milestone D (Hour 7-8):** Fuel Logging, Expense tracking, and Analytics/CSV reports (Completed).
   - *Hour 3 Progress Update:* Added fuel efficiency tracking and ROI analytics charts.
+  - *Hour 4 Progress Update:* Polished fuel efficiency telemetry graphs and verified CSV export security permissions.
 
 ## 🚀 Getting Started
 ```bash
