@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import User from './models/User.js';
+import Vehicle from './models/Vehicle.js';
+import Driver from './models/Driver.js';
 
 dotenv.config();
 
@@ -9,17 +11,16 @@ const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/transitops'
 
 const seedDatabase = async () => {
   try {
-    console.log('Connecting to database for seeding user accounts...');
+    console.log('Connecting to database for seeding...');
     await mongoose.connect(mongoUri);
-    console.log('Connected. Cleaning existing user data...');
+    console.log('Connected. Cleaning existing data...');
     
-    // Clear Users
     await User.deleteMany({});
-    console.log('Users cleared. Seeding default operators...');
-
+    await Vehicle.deleteMany({});
+    await Driver.deleteMany({});
+    
+    console.log('Data cleared. Seeding Users...');
     const salt = await bcrypt.genSalt(10);
-    const defaultPassword = 'password123'; // Temporary plain password, will be hashed below
-
     const users = [
       {
         name: 'Alex Mercer',
@@ -50,9 +51,72 @@ const seedDatabase = async () => {
         isEmailVerified: true
       }
     ];
-
     await User.insertMany(users);
-    console.log('Seeded 4 operator users successfully.');
+
+    console.log('Seeding Vehicles...');
+    const vehicles = [
+      {
+        vin: 'VIN1002930492019',
+        plateNumber: 'TX-882-B',
+        model: 'Peterbilt 579 Semi-Truck',
+        type: 'Heavy Truck',
+        maxPayloadCapacity: 24000,
+        fuelCapacity: 450,
+        status: 'Available',
+        insuranceExpiry: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000)
+      },
+      {
+        vin: 'VIN9920381029304',
+        plateNumber: 'CA-947-X',
+        model: 'Freightliner Cascadia',
+        type: 'Heavy Truck',
+        maxPayloadCapacity: 26000,
+        fuelCapacity: 500,
+        status: 'Available',
+        insuranceExpiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
+      },
+      {
+        vin: 'VIN3392019203940',
+        plateNumber: 'FL-229-M',
+        model: 'Ford F-550 Box Truck',
+        type: 'Medium Duty',
+        maxPayloadCapacity: 12000,
+        fuelCapacity: 150,
+        status: 'Available',
+        insuranceExpiry: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // Expired Insurance
+      }
+    ];
+    await Vehicle.insertMany(vehicles);
+
+    console.log('Seeding Drivers...');
+    const drivers = [
+      {
+        name: 'Marcus Vance',
+        licenseNumber: 'DL-TEX-99201',
+        licenseExpiry: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+        contact: '+1-555-0192',
+        status: 'Off Duty',
+        verificationStatus: 'Verified'
+      },
+      {
+        name: 'Janice Kowalski',
+        licenseNumber: 'DL-CAL-38291',
+        licenseExpiry: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
+        contact: '+1-555-0283',
+        status: 'Off Duty',
+        verificationStatus: 'Pending',
+        licensePhotoUrl: '/uploads/demo_license.png'
+      },
+      {
+        name: 'Dave Miller',
+        licenseNumber: 'DL-FLA-44920',
+        licenseExpiry: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // Expired License
+        contact: '+1-555-0394',
+        status: 'Suspended',
+        verificationStatus: 'Rejected'
+      }
+    ];
+    await Driver.insertMany(drivers);
 
     console.log('Database seeding successfully finished.');
     process.exit(0);

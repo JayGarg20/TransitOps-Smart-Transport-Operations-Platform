@@ -6,20 +6,19 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
-// Import Routes (Auth only for this branch)
+// Import Routes
 import authRoutes from './routes/auth.js';
+import vehicleRoutes from './routes/vehicles.js';
+import driverRoutes from './routes/drivers.js';
 
-// Setup environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ESM __dirname resolution
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Security and utility Middlewares
 app.use(helmet({
   crossOriginResourcePolicy: false,
 }));
@@ -32,13 +31,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Bind routes
 app.use('/api/auth', authRoutes);
+app.use('/api/vehicles', vehicleRoutes);
+app.use('/api/drivers', driverRoutes);
 
-// Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'UP', message: 'TransitOps Backend Service (Auth Node) is healthy.' });
+  res.json({ status: 'UP', message: 'TransitOps Backend Service is healthy.' });
 });
 
-// Centralized error handling middleware
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   res.status(status).json({
@@ -46,12 +45,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Database connection
 const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/transitops';
 
 mongoose.connect(mongoUri)
   .then(() => {
-    console.log('Successfully connected to MongoDB database (Auth Node).');
+    console.log('Successfully connected to MongoDB database.');
     app.listen(PORT, () => {
       console.log(`TransitOps server listening on port ${PORT}`);
     });

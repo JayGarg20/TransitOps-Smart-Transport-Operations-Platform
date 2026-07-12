@@ -3,11 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 
-// Import Screens (Auth & Dashboard only)
+// Import Screens (Auth, Dashboard, Vehicles, Drivers)
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Vehicles from './pages/Vehicles';
+import Drivers from './pages/Drivers';
 
-// Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
   
@@ -34,10 +35,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Login Canvas */}
         <Route path="/login" element={<Login />} />
         
-        {/* Authenticated Canvas */}
         <Route 
           path="/" 
           element={
@@ -46,10 +45,10 @@ function App() {
             </ProtectedRoute>
           }
         >
-          {/* Main Module Pages */}
           <Route index element={<Dashboard />} />
+          <Route path="vehicles" element={<Vehicles />} />
+          <Route path="drivers" element={<Drivers />} />
           
-          {/* Fallback route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

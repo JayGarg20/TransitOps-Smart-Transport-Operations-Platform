@@ -15,12 +15,23 @@ const Layout = () => {
     return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   };
 
-  // Only Dashboard available on this branch
   const navItems = [
     {
       name: 'Dashboard',
       icon: 'dashboard',
       path: '/',
+      roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst']
+    },
+    {
+      name: 'Fleet Assets',
+      icon: 'local_shipping',
+      path: '/vehicles',
+      roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst']
+    },
+    {
+      name: 'Drivers',
+      icon: 'badge',
+      path: '/drivers',
       roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst']
     }
   ];
@@ -112,7 +123,7 @@ const Layout = () => {
       {mobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="fixed inset-0 bg-primary/40 backdrop-blur-xs" onClick={() => setMobileMenuOpen(false)}></div>
-          <aside className="w-[260px] h-screen bg-primary-container text-on-primary-container font-label-caps text-label-caps uppercase tracking-wider flex flex-col py-stack-md relative z-50 border-r border-outline">
+          <aside className="w-[260px] h-screen bg-primary-container text-on-primary-container font-label-caps text-label-caps uppercase tracking-wider flex-col py-stack-md relative z-50 border-r border-outline">
             <div className="px-6 mb-8 flex justify-between items-center">
               <div>
                 <h1 className="font-headline-md text-headline-md font-bold text-on-primary-container">Waybound</h1>
